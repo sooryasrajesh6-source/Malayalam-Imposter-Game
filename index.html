@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Malayalam Imposter Game</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ef4444">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  min-height:100vh;
+  background:#111827;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.app{
+  width:100%;
+  max-width:430px;
+  background:#1f2937;
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+}
+
+h1{
+  text-align:center;
+  margin-bottom:10px;
+  font-size:30px;
+}
+
+p{
+  text-align:center;
+  color:#d1d5db;
+  margin-bottom:20px;
+  line-height:1.6;
+}
+
+button{
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:12px;
+  background:#ef4444;
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  margin-top:12px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#dc2626;
+}
+
+.outline{
+  background:transparent;
+  border:2px solid #ef4444;
+  color:#ef4444;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  margin-top:10px;
+  font-size:17px;
+}
+
+.player-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.player-row input{
+  flex:1;
+}
+
+.remove{
+  width:50px;
+  background:#dc2626;
+}
+
+.card{
+  background:white;
+  color:#111827;
+  padding:30px;
+  border-radius:18px;
+  text-align:center;
+  margin:25px 0;
+}
+
+.word{
+  font-size:36px;
+  font-weight:bold;
+}
+
+.small{
+  color:#374151;
+  margin-bottom:10px;
+}
+
+.vote-btn{
+  background:#374151;
+}
+
+.result-text{
+  font-size:20px;
+  line-height:1.8;
+  font-weight:bold;
+}
+
+.hidden{
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div id="home">
+    <h1>Find The Imposter</h1>
+    <p>Malayalam Party Game</p>
+    <button onclick="showScreen('setup')">Start Game</button>
+    <button class="outline" onclick="showScreen('rules')">How to Play</button>
+  </div>
+
+  <div id="rules" class="hidden">
+    <h1>How to Play</h1>
+    <p>
+      1. Add minimum 3 players.<br><br>
+      2. Each player secretly sees one Malayalam word.<br><br>
+      3. Most players get the same word.<br><br>
+      4. One player gets a different word. That player is the imposter.<br><br>
+      5. Discuss and ask questions.<br><br>
+      6. Vote the suspected imposter.<br><br>
+      7. If the imposter is voted out, players win.
+    </p>
+    <button onclick="showScreen('home')">Back</button>
+  </div>
+
+  <div id="setup" class="hidden">
+    <h1>Add Players</h1>
+    <div id="playersBox"></div>
+    <button class="outline" onclick="addPlayer()">+ Add Player</button>
+    <button onclick="startGame()">Begin Game</button>
+  </div>
+
+  <div id="reveal" class="hidden">
+    <h1 id="playerName"></h1>
+    <p>Pass phone to this player</p>
+
+    <div id="wordBox" class="card hidden">
+      <p class="small" id="categoryText"></p>
+      <div class="word" id="secretWord"></div>
+    </div>
+
+    <button id="showBtn" onclick="showWord()">Show My Word</button>
+    <button id="nextBtn" class="hidden" onclick="nextPlayer()">Next Player</button>
+  </div>
+
+  <div id="discussion" class="hidden">
+    <h1>Discussion Time</h1>
+    <p id="discussionCategory"></p>
+    <p>Ask questions and find who got the different word.</p>
+    <button onclick="showVoting()">Go to Voting</button>
+  </div>
+
+  <div id="vote" class="hidden">
+    <h1>Vote Imposter</h1>
+    <p>Tap the player name to vote</p>
+    <div id="voteBox"></div>
+  </div>
+
+  <div id="result" class="hidden">
+    <h1 id="winnerText"></h1>
+    <div class="card">
+      <div class="result-text" id="resultDetails"></div>
+    </div>
+    <button onclick="resetGame()">Play Again</button>
+  </div>
+
+</div>
+
+<script>
+const words = [
+  { normal:"ബിരിയാണി", imposter:"പൊറോട്ട", category:"ഭക്ഷണം" },
+  { normal:"ദോശ", imposter:"അപ്പം", category:"ഭക്ഷണം" },
+  { normal:"പുട്ട്", imposter:"ഇടിയപ്പം", category:"ഭക്ഷണം" },
+  { normal:"ആന", imposter:"കുതിര", category:"മൃഗങ്ങൾ" },
+  { normal:"നായ", imposter:"പൂച്ച", category:"മൃഗങ്ങൾ" },
+  { normal:"സ്കൂൾ", imposter:"കോളേജ്", category:"സ്ഥലങ്ങൾ" },
+  { normal:"ഡോക്ടർ", imposter:"നഴ്‌സ്", category:"ജോലി" },
+  { normal:"ഫുട്ബോൾ", imposter:"ക്രിക്കറ്റ്", category:"കായികം" },
+  { normal:"ഓണം", imposter:"വിഷു", category:"ഉത്സവം" },
+  { normal:"കടപ്പുറം", imposter:"നദി", category:"സ്ഥലങ്ങൾ" }
+];
+
+let players = ["", "", ""];
+let roles = [];
+let currentPlayer = 0;
+let selectedWords = null;
+let votes = {};
+
+function showScreen(screenId){
+  document.querySelectorAll(".app > div").forEach(div => {
+    div.classList.add("hidden");
+  });
+  document.getElementById(screenId).classList.remove("hidden");
+}
+
+function renderPlayers(){
+  const box = document.getElementById("playersBox");
+  box.innerHTML = "";
+
+  players.forEach((player, index) => {
+    box.innerHTML += `
+      <div class="player-row">
+        <input 
+          type="text" 
+          placeholder="Player ${index + 1}" 
+          value="${player}"
+          oninput="players[${index}] = this.value"
+        >
+        <button class="remove" onclick="removePlayer(${index})">X</button>
+      </div>
+    `;
+  });
+}
+
+function addPlayer(){
+  players.push("");
+  renderPlayers();
+}
+
+function removePlayer(index){
+  if(players.length <= 3){
+    alert("Minimum 3 players needed");
+    return;
+  }
+
+  players.splice(index, 1);
+  renderPlayers();
+}
+
+function startGame(){
+  const validPlayers = players.filter(p => p.trim() !== "");
+
+  if(validPlayers.length < 3){
+    alert("Please add at least 3 players");
+    return;
+  }
+
+  selectedWords = words[Math.floor(Math.random() * words.length)];
+  const imposterIndex = Math.floor(Math.random() * validPlayers.length);
+
+  roles = validPlayers.map((name, index) => {
+    return {
+      name:name,
+      role:index === imposterIndex ? "IMPOSTER" : "PLAYER",
+      word:index === imposterIndex ? selectedWords.imposter : selectedWords.normal
+    };
+  });
+
+  currentPlayer = 0;
+  votes = {};
+  loadRevealScreen();
+  showScreen("reveal");
+}
+
+function loadRevealScreen(){
+  document.getElementById("playerName").innerText = roles[currentPlayer].name;
+  document.getElementById("wordBox").classList.add("hidden");
+  document.getElementById("showBtn").classList.remove("hidden");
+  document.getElementById("nextBtn").classList.add("hidden");
+}
+
+function showWord(){
+  document.getElementById("categoryText").innerText = "Category: " + selectedWords.category;
+  document.getElementById("secretWord").innerText = roles[currentPlayer].word;
+
+  document.getElementById("wordBox").classList.remove("hidden");
+  document.getElementById("showBtn").classList.add("hidden");
+  document.getElementById("nextBtn").classList.remove("hidden");
+
+  if(currentPlayer === roles.length - 1){
+    document.getElementById("nextBtn").innerText = "Start Discussion";
+  }else{
+    document.getElementById("nextBtn").innerText = "Next Player";
+  }
+}
+
+function nextPlayer(){
+  if(currentPlayer < roles.length - 1){
+    currentPlayer++;
+    loadRevealScreen();
+  }else{
+    document.getElementById("discussionCategory").innerText =
+      "Category: " + selectedWords.category;
+    showScreen("discussion");
+  }
+}
+
+function showVoting(){
+  const voteBox = document.getElementById("voteBox");
+  voteBox.innerHTML = "";
+  votes = {};
+
+  roles.forEach(player => {
+    votes[player.name] = 0;
+    voteBox.innerHTML += `
+      <button class="vote-btn" onclick="votePlayer('${player.name}')">
+        ${player.name} - Votes: <span id="vote-${player.name}">0</span>
+      </button>
+    `;
+  });
+
+  showScreen("vote");
+}
+
+function votePlayer(name){
+  votes[name]++;
+  document.getElementById("vote-" + name).innerText = votes[name];
+
+  const totalVotes = Object.values(votes).reduce((a,b) => a + b, 0);
+
+  if(totalVotes === roles.length){
+    calculateResult();
+  }
+}
+
+function calculateResult(){
+  let votedOut = "";
+  let maxVotes = 0;
+
+  for(let name in votes){
+    if(votes[name] > maxVotes){
+      maxVotes = votes[name];
+      votedOut = name;
+    }
+  }
+
+  const imposter = roles.find(p => p.role === "IMPOSTER");
+
+  if(votedOut === imposter.name){
+    document.getElementById("winnerText").innerText = "Players Win 🎉";
+  }else{
+    document.getElementById("winnerText").innerText = "Imposter Wins 😈";
+  }
+
+  document.getElementById("resultDetails").innerHTML = `
+    Imposter: ${imposter.name}<br><br>
+    Normal Word: ${selectedWords.normal}<br>
+    Imposter Word: ${selectedWords.imposter}
+  `;
+
+  showScreen("result");
+}
+
+function resetGame(){
+  players = ["", "", ""];
+  roles = [];
+  currentPlayer = 0;
+  selectedWords = null;
+  votes = {};
+  renderPlayers();
+  showScreen("home");
+}
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+
+renderPlayers();
+</script>
+
+</body>
+</html>
