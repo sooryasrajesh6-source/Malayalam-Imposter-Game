@@ -1,58 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Malayalam Imposter Game</title>
-
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ef4444">
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:Arial, sans-serif;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
 body{
   min-height:100vh;
-  background:#111827;
+  background:linear-gradient(135deg,#111827,#1f2937,#450a0a);
   color:white;
   display:flex;
   justify-content:center;
   align-items:center;
   padding:20px;
 }
-
 .app{
   width:100%;
   max-width:430px;
-  background:#1f2937;
+  background:rgba(17,24,39,.95);
   padding:25px;
-  border-radius:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  border-radius:22px;
+  box-shadow:0 0 30px rgba(0,0,0,.5);
 }
-
-h1{
-  text-align:center;
-  margin-bottom:10px;
-  font-size:30px;
-}
-
-p{
-  text-align:center;
-  color:#d1d5db;
-  margin-bottom:20px;
-  line-height:1.6;
-}
-
+h1{text-align:center;font-size:30px;margin-bottom:10px}
+p{text-align:center;color:#d1d5db;line-height:1.6;margin-bottom:20px}
 button{
   width:100%;
   padding:15px;
   border:none;
-  border-radius:12px;
+  border-radius:14px;
   background:#ef4444;
   color:white;
   font-size:18px;
@@ -60,17 +40,9 @@ button{
   margin-top:12px;
   cursor:pointer;
 }
-
-button:hover{
-  background:#dc2626;
-}
-
-.outline{
-  background:transparent;
-  border:2px solid #ef4444;
-  color:#ef4444;
-}
-
+button:hover{background:#dc2626}
+.outline{background:transparent;border:2px solid #ef4444;color:#ef4444}
+.quit{background:#374151}
 input{
   width:100%;
   padding:14px;
@@ -79,54 +51,32 @@ input{
   margin-top:10px;
   font-size:17px;
 }
-
-.player-row{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-
-.player-row input{
-  flex:1;
-}
-
-.remove{
-  width:50px;
-  background:#dc2626;
-}
-
+.player-row{display:flex;gap:8px;align-items:center}
+.player-row input{flex:1}
+.remove{width:50px;background:#dc2626}
 .card{
   background:white;
   color:#111827;
   padding:30px;
-  border-radius:18px;
+  border-radius:20px;
   text-align:center;
   margin:25px 0;
 }
-
-.word{
-  font-size:36px;
+.word{font-size:38px;font-weight:bold}
+.small{color:#374151;margin-bottom:10px}
+.vote-btn{background:#374151}
+.result-text{font-size:20px;line-height:1.8;font-weight:bold}
+.hidden{display:none}
+.badge{
+  background:#facc15;
+  color:#111827;
+  padding:8px 14px;
+  border-radius:20px;
+  display:inline-block;
   font-weight:bold;
+  margin:10px auto;
 }
-
-.small{
-  color:#374151;
-  margin-bottom:10px;
-}
-
-.vote-btn{
-  background:#374151;
-}
-
-.result-text{
-  font-size:20px;
-  line-height:1.8;
-  font-weight:bold;
-}
-
-.hidden{
-  display:none;
-}
+.center{text-align:center}
 </style>
 </head>
 
@@ -144,13 +94,11 @@ input{
   <div id="rules" class="hidden">
     <h1>How to Play</h1>
     <p>
-      1. Add minimum 3 players.<br><br>
-      2. Each player secretly sees one Malayalam word.<br><br>
-      3. Most players get the same word.<br><br>
-      4. One player gets a different word. That player is the imposter.<br><br>
-      5. Discuss and ask questions.<br><br>
-      6. Vote the suspected imposter.<br><br>
-      7. If the imposter is voted out, players win.
+      Add minimum 3 players.<br><br>
+      Most players get the same Malayalam word.<br><br>
+      One player gets a different word. That player is the imposter.<br><br>
+      Discuss, ask questions, vote, then click Finish Game.<br><br>
+      Game will not finish automatically.
     </p>
     <button onclick="showScreen('home')">Back</button>
   </div>
@@ -160,6 +108,7 @@ input{
     <div id="playersBox"></div>
     <button class="outline" onclick="addPlayer()">+ Add Player</button>
     <button onclick="startGame()">Begin Game</button>
+    <button class="quit" onclick="resetGame()">Quit Game</button>
   </div>
 
   <div id="reveal" class="hidden">
@@ -173,19 +122,25 @@ input{
 
     <button id="showBtn" onclick="showWord()">Show My Word</button>
     <button id="nextBtn" class="hidden" onclick="nextPlayer()">Next Player</button>
+    <button class="quit" onclick="resetGame()">Quit Game</button>
   </div>
 
   <div id="discussion" class="hidden">
     <h1>Discussion Time</h1>
-    <p id="discussionCategory"></p>
+    <div class="center">
+      <span class="badge" id="discussionCategory"></span>
+    </div>
     <p>Ask questions and find who got the different word.</p>
     <button onclick="showVoting()">Go to Voting</button>
+    <button class="quit" onclick="resetGame()">Quit Game</button>
   </div>
 
   <div id="vote" class="hidden">
     <h1>Vote Imposter</h1>
-    <p>Tap the player name to vote</p>
+    <p>Tap names to vote. Game finishes only after clicking Finish Game.</p>
     <div id="voteBox"></div>
+    <button onclick="calculateResult()">Finish Game</button>
+    <button class="quit" onclick="resetGame()">Quit Game</button>
   </div>
 
   <div id="result" class="hidden">
@@ -193,7 +148,8 @@ input{
     <div class="card">
       <div class="result-text" id="resultDetails"></div>
     </div>
-    <button onclick="resetGame()">Play Again</button>
+    <button onclick="startNewRound()">Next Round</button>
+    <button class="quit" onclick="resetGame()">Quit Game</button>
   </div>
 
 </div>
@@ -203,13 +159,18 @@ const words = [
   { normal:"ബിരിയാണി", imposter:"പൊറോട്ട", category:"ഭക്ഷണം" },
   { normal:"ദോശ", imposter:"അപ്പം", category:"ഭക്ഷണം" },
   { normal:"പുട്ട്", imposter:"ഇടിയപ്പം", category:"ഭക്ഷണം" },
+  { normal:"ചായ", imposter:"കാപ്പി", category:"പാനം" },
   { normal:"ആന", imposter:"കുതിര", category:"മൃഗങ്ങൾ" },
   { normal:"നായ", imposter:"പൂച്ച", category:"മൃഗങ്ങൾ" },
+  { normal:"കടുവ", imposter:"സിംഹം", category:"മൃഗങ്ങൾ" },
   { normal:"സ്കൂൾ", imposter:"കോളേജ്", category:"സ്ഥലങ്ങൾ" },
+  { normal:"ആശുപത്രി", imposter:"ക്ലിനിക്", category:"സ്ഥലങ്ങൾ" },
+  { normal:"കടപ്പുറം", imposter:"നദി", category:"സ്ഥലങ്ങൾ" },
   { normal:"ഡോക്ടർ", imposter:"നഴ്‌സ്", category:"ജോലി" },
+  { normal:"ടീച്ചർ", imposter:"പ്രൊഫസർ", category:"ജോലി" },
   { normal:"ഫുട്ബോൾ", imposter:"ക്രിക്കറ്റ്", category:"കായികം" },
   { normal:"ഓണം", imposter:"വിഷു", category:"ഉത്സവം" },
-  { normal:"കടപ്പുറം", imposter:"നദി", category:"സ്ഥലങ്ങൾ" }
+  { normal:"സിനിമ", imposter:"സീരിയൽ", category:"വിനോദം" }
 ];
 
 let players = ["", "", ""];
@@ -218,26 +179,19 @@ let currentPlayer = 0;
 let selectedWords = null;
 let votes = {};
 
-function showScreen(screenId){
-  document.querySelectorAll(".app > div").forEach(div => {
-    div.classList.add("hidden");
-  });
-  document.getElementById(screenId).classList.remove("hidden");
+function showScreen(id){
+  document.querySelectorAll(".app > div").forEach(div=>div.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
 }
 
 function renderPlayers(){
-  const box = document.getElementById("playersBox");
-  box.innerHTML = "";
-
-  players.forEach((player, index) => {
-    box.innerHTML += `
+  const box=document.getElementById("playersBox");
+  box.innerHTML="";
+  players.forEach((player,index)=>{
+    box.innerHTML+=`
       <div class="player-row">
-        <input 
-          type="text" 
-          placeholder="Player ${index + 1}" 
-          value="${player}"
-          oninput="players[${index}] = this.value"
-        >
+        <input type="text" placeholder="Player ${index+1}" value="${player}"
+        oninput="players[${index}] = this.value">
         <button class="remove" onclick="removePlayer(${index})">X</button>
       </div>
     `;
@@ -250,81 +204,73 @@ function addPlayer(){
 }
 
 function removePlayer(index){
-  if(players.length <= 3){
+  if(players.length<=3){
     alert("Minimum 3 players needed");
     return;
   }
-
-  players.splice(index, 1);
+  players.splice(index,1);
   renderPlayers();
 }
 
 function startGame(){
-  const validPlayers = players.filter(p => p.trim() !== "");
+  const validPlayers=players.filter(p=>p.trim()!=="");
 
-  if(validPlayers.length < 3){
+  if(validPlayers.length<3){
     alert("Please add at least 3 players");
     return;
   }
 
-  selectedWords = words[Math.floor(Math.random() * words.length)];
-  const imposterIndex = Math.floor(Math.random() * validPlayers.length);
+  selectedWords=words[Math.floor(Math.random()*words.length)];
+  const imposterIndex=Math.floor(Math.random()*validPlayers.length);
 
-  roles = validPlayers.map((name, index) => {
-    return {
-      name:name,
-      role:index === imposterIndex ? "IMPOSTER" : "PLAYER",
-      word:index === imposterIndex ? selectedWords.imposter : selectedWords.normal
-    };
-  });
+  roles=validPlayers.map((name,index)=>({
+    name:name,
+    role:index===imposterIndex ? "IMPOSTER" : "PLAYER",
+    word:index===imposterIndex ? selectedWords.imposter : selectedWords.normal
+  }));
 
-  currentPlayer = 0;
-  votes = {};
+  currentPlayer=0;
+  votes={};
   loadRevealScreen();
   showScreen("reveal");
 }
 
 function loadRevealScreen(){
-  document.getElementById("playerName").innerText = roles[currentPlayer].name;
+  document.getElementById("playerName").innerText=roles[currentPlayer].name;
   document.getElementById("wordBox").classList.add("hidden");
   document.getElementById("showBtn").classList.remove("hidden");
   document.getElementById("nextBtn").classList.add("hidden");
 }
 
 function showWord(){
-  document.getElementById("categoryText").innerText = "Category: " + selectedWords.category;
-  document.getElementById("secretWord").innerText = roles[currentPlayer].word;
-
+  document.getElementById("categoryText").innerText="Category: "+selectedWords.category;
+  document.getElementById("secretWord").innerText=roles[currentPlayer].word;
   document.getElementById("wordBox").classList.remove("hidden");
   document.getElementById("showBtn").classList.add("hidden");
   document.getElementById("nextBtn").classList.remove("hidden");
 
-  if(currentPlayer === roles.length - 1){
-    document.getElementById("nextBtn").innerText = "Start Discussion";
-  }else{
-    document.getElementById("nextBtn").innerText = "Next Player";
-  }
+  document.getElementById("nextBtn").innerText =
+    currentPlayer===roles.length-1 ? "Start Discussion" : "Next Player";
 }
 
 function nextPlayer(){
-  if(currentPlayer < roles.length - 1){
+  if(currentPlayer<roles.length-1){
     currentPlayer++;
     loadRevealScreen();
   }else{
-    document.getElementById("discussionCategory").innerText =
-      "Category: " + selectedWords.category;
+    document.getElementById("discussionCategory").innerText=selectedWords.category;
     showScreen("discussion");
   }
 }
 
 function showVoting(){
-  const voteBox = document.getElementById("voteBox");
-  voteBox.innerHTML = "";
-  votes = {};
+  const voteBox=document.getElementById("voteBox");
+  voteBox.innerHTML="";
+  votes={};
 
-  roles.forEach(player => {
-    votes[player.name] = 0;
-    voteBox.innerHTML += `
+  roles.forEach(player=>{
+    votes[player.name]=0;
+    voteBox.innerHTML+=`
       <button class="vote-btn" onclick="votePlayer('${player.name}')">
         ${player.name} - Votes: <span id="vote-${player.name}">0</span>
       </button>
@@ -336,35 +282,35 @@ function showVoting(){
 
 function votePlayer(name){
   votes[name]++;
-  document.getElementById("vote-" + name).innerText = votes[name];
-
-  const totalVotes = Object.values(votes).reduce((a,b) => a + b, 0);
-
-  if(totalVotes === roles.length){
-    calculateResult();
-  }
+  document.getElementById("vote-"+name).innerText=votes[name];
 }
 
 function calculateResult(){
-  let votedOut = "";
-  let maxVotes = 0;
+  let votedOut="";
+  let maxVotes=-1;
 
   for(let name in votes){
-    if(votes[name] > maxVotes){
-      maxVotes = votes[name];
-      votedOut = name;
+    if(votes[name]>maxVotes){
+      maxVotes=votes[name];
+      votedOut=name;
     }
   }
 
-  const imposter = roles.find(p => p.role === "IMPOSTER");
-
-  if(votedOut === imposter.name){
-    document.getElementById("winnerText").innerText = "Players Win 🎉";
-  }else{
-    document.getElementById("winnerText").innerText = "Imposter Wins 😈";
+  if(maxVotes===0){
+    alert("Please vote before finishing");
+    return;
   }
 
-  document.getElementById("resultDetails").innerHTML = `
+  const imposter=roles.find(p=>p.role==="IMPOSTER");
+
+  if(votedOut===imposter.name){
+    document.getElementById("winnerText").innerText="Players Win 🎉";
+  }else{
+    document.getElementById("winnerText").innerText="Imposter Wins 😈";
+  }
+
+  document.getElementById("resultDetails").innerHTML=`
+    Voted Out: ${votedOut}<br><br>
     Imposter: ${imposter.name}<br><br>
     Normal Word: ${selectedWords.normal}<br>
     Imposter Word: ${selectedWords.imposter}
@@ -373,17 +319,23 @@ function calculateResult(){
   showScreen("result");
 }
 
+function startNewRound(){
+  votes={};
+  currentPlayer=0;
+  startGame();
+}
+
 function resetGame(){
-  players = ["", "", ""];
-  roles = [];
-  currentPlayer = 0;
-  selectedWords = null;
-  votes = {};
+  players=["", "", ""];
+  roles=[];
+  currentPlayer=0;
+  selectedWords=null;
+  votes={};
   renderPlayers();
   showScreen("home");
 }
 
-if ("serviceWorker" in navigator) {
+if("serviceWorker" in navigator){
   navigator.serviceWorker.register("service-worker.js");
 }
 
