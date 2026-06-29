@@ -4,11 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Malayalam Imposter Game</title>
+
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ef4444">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
 body{
   min-height:100vh;
   background:linear-gradient(135deg,#111827,#1f2937,#450a0a);
@@ -18,16 +25,29 @@ body{
   align-items:center;
   padding:20px;
 }
+
 .app{
   width:100%;
   max-width:430px;
-  background:rgba(17,24,39,.95);
+  background:rgba(17,24,39,.96);
   padding:25px;
   border-radius:22px;
-  box-shadow:0 0 30px rgba(0,0,0,.5);
+  box-shadow:0 0 35px rgba(0,0,0,.55);
 }
-h1{text-align:center;font-size:30px;margin-bottom:10px}
-p{text-align:center;color:#d1d5db;line-height:1.6;margin-bottom:20px}
+
+h1{
+  text-align:center;
+  font-size:30px;
+  margin-bottom:10px;
+}
+
+p{
+  text-align:center;
+  color:#d1d5db;
+  line-height:1.6;
+  margin-bottom:20px;
+}
+
 button{
   width:100%;
   padding:15px;
@@ -40,9 +60,21 @@ button{
   margin-top:12px;
   cursor:pointer;
 }
-button:hover{background:#dc2626}
-.outline{background:transparent;border:2px solid #ef4444;color:#ef4444}
-.quit{background:#374151}
+
+button:hover{
+  background:#dc2626;
+}
+
+.outline{
+  background:transparent;
+  border:2px solid #ef4444;
+  color:#ef4444;
+}
+
+.quit{
+  background:#374151;
+}
+
 input{
   width:100%;
   padding:14px;
@@ -51,9 +83,22 @@ input{
   margin-top:10px;
   font-size:17px;
 }
-.player-row{display:flex;gap:8px;align-items:center}
-.player-row input{flex:1}
-.remove{width:50px;background:#dc2626}
+
+.player-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.player-row input{
+  flex:1;
+}
+
+.remove{
+  width:50px;
+  background:#dc2626;
+}
+
 .card{
   background:white;
   color:#111827;
@@ -62,11 +107,31 @@ input{
   text-align:center;
   margin:25px 0;
 }
-.word{font-size:38px;font-weight:bold}
-.small{color:#374151;margin-bottom:10px}
-.vote-btn{background:#374151}
-.result-text{font-size:20px;line-height:1.8;font-weight:bold}
-.hidden{display:none}
+
+.word{
+  font-size:38px;
+  font-weight:bold;
+}
+
+.small{
+  color:#374151;
+  margin-bottom:10px;
+}
+
+.vote-btn{
+  background:#374151;
+}
+
+.result-text{
+  font-size:20px;
+  line-height:1.8;
+  font-weight:bold;
+}
+
+.hidden{
+  display:none;
+}
+
 .badge{
   background:#facc15;
   color:#111827;
@@ -76,7 +141,10 @@ input{
   font-weight:bold;
   margin:10px auto;
 }
-.center{text-align:center}
+
+.center{
+  text-align:center;
+}
 </style>
 </head>
 
@@ -134,10 +202,9 @@ input{
     <button onclick="showVoting()">Go to Voting</button>
     <button class="quit" onclick="resetGame()">Quit Game</button>
   </div>
-
-  <div id="vote" class="hidden">
+    <div id="vote" class="hidden">
     <h1>Vote Imposter</h1>
-    <p>Tap names to vote. Game finishes only after clicking Finish Game.</p>
+    <p>Tap player names to vote. Game finishes only after clicking Finish Game.</p>
     <div id="voteBox"></div>
     <button onclick="calculateResult()">Finish Game</button>
     <button class="quit" onclick="resetGame()">Quit Game</button>
@@ -156,21 +223,104 @@ input{
 
 <script>
 const words = [
-  { normal:"ബിരിയാണി", imposter:"പൊറോട്ട", category:"ഭക്ഷണം" },
-  { normal:"ദോശ", imposter:"അപ്പം", category:"ഭക്ഷണം" },
-  { normal:"പുട്ട്", imposter:"ഇടിയപ്പം", category:"ഭക്ഷണം" },
-  { normal:"ചായ", imposter:"കാപ്പി", category:"പാനം" },
-  { normal:"ആന", imposter:"കുതിര", category:"മൃഗങ്ങൾ" },
-  { normal:"നായ", imposter:"പൂച്ച", category:"മൃഗങ്ങൾ" },
-  { normal:"കടുവ", imposter:"സിംഹം", category:"മൃഗങ്ങൾ" },
-  { normal:"സ്കൂൾ", imposter:"കോളേജ്", category:"സ്ഥലങ്ങൾ" },
-  { normal:"ആശുപത്രി", imposter:"ക്ലിനിക്", category:"സ്ഥലങ്ങൾ" },
-  { normal:"കടപ്പുറം", imposter:"നദി", category:"സ്ഥലങ്ങൾ" },
-  { normal:"ഡോക്ടർ", imposter:"നഴ്‌സ്", category:"ജോലി" },
-  { normal:"ടീച്ചർ", imposter:"പ്രൊഫസർ", category:"ജോലി" },
-  { normal:"ഫുട്ബോൾ", imposter:"ക്രിക്കറ്റ്", category:"കായികം" },
-  { normal:"ഓണം", imposter:"വിഷു", category:"ഉത്സവം" },
-  { normal:"സിനിമ", imposter:"സീരിയൽ", category:"വിനോദം" }
+{category:"ഭക്ഷണം",normal:"ബിരിയാണി",imposter:"പൊറോട്ട"},
+{category:"ഭക്ഷണം",normal:"ദോശ",imposter:"അപ്പം"},
+{category:"ഭക്ഷണം",normal:"പുട്ട്",imposter:"ഇടിയപ്പം"},
+{category:"ഭക്ഷണം",normal:"ഇഡ്ലി",imposter:"വട"},
+{category:"ഭക്ഷണം",normal:"ചപ്പാത്തി",imposter:"നാൻ"},
+{category:"ഭക്ഷണം",normal:"പൂരി",imposter:"ഭത്തൂര"},
+{category:"ഭക്ഷണം",normal:"സമോസ",imposter:"പഫ്"},
+{category:"ഭക്ഷണം",normal:"ഉപ്പുമാവ്",imposter:"അവൽ"},
+{category:"ഭക്ഷണം",normal:"പായസം",imposter:"ഐസ്ക്രീം"},
+{category:"ഭക്ഷണം",normal:"മസാല ദോശ",imposter:"പേപ്പർ ദോശ"},
+
+{category:"മൃഗങ്ങൾ",normal:"ആന",imposter:"കുതിര"},
+{category:"മൃഗങ്ങൾ",normal:"നായ",imposter:"പൂച്ച"},
+{category:"മൃഗങ്ങൾ",normal:"കടുവ",imposter:"സിംഹം"},
+{category:"മൃഗങ്ങൾ",normal:"മുയൽ",imposter:"അണ്ണാൻ"},
+{category:"മൃഗങ്ങൾ",normal:"പശു",imposter:"എരുമ"},
+{category:"മൃഗങ്ങൾ",normal:"കോഴി",imposter:"താറാവ്"},
+{category:"മൃഗങ്ങൾ",normal:"ഒട്ടകം",imposter:"ജിറാഫ്"},
+{category:"മൃഗങ്ങൾ",normal:"കഴുത",imposter:"കുതിര"},
+{category:"മൃഗങ്ങൾ",normal:"കരടി",imposter:"പാണ്ട"},
+{category:"മൃഗങ്ങൾ",normal:"കുരങ്ങ്",imposter:"ലങ്കൂർ"},
+
+{category:"പക്ഷികൾ",normal:"കാക്ക",imposter:"പ്രാവ്"},
+{category:"പക്ഷികൾ",normal:"മയിൽ",imposter:"കോഴി"},
+{category:"പക്ഷികൾ",normal:"കിളി",imposter:"മൈന"},
+{category:"പക്ഷികൾ",normal:"കഴുകൻ",imposter:"പരുന്ത്"},
+{category:"പക്ഷികൾ",normal:"തത്ത",imposter:"ലവ് ബേഡ്"},
+{category:"പക്ഷികൾ",normal:"മൂങ്ങ",imposter:"കാക്ക"},
+{category:"പക്ഷികൾ",normal:"കൊക്ക്",imposter:"നാര"},
+{category:"പക്ഷികൾ",normal:"ഹംസം",imposter:"താറാവ്"},
+{category:"പക്ഷികൾ",normal:"കുയിൽ",imposter:"മൈന"},
+{category:"പക്ഷികൾ",normal:"ചിറ്റുകുരുവി",imposter:"പ്രാവ്"},
+
+{category:"സ്ഥലങ്ങൾ",normal:"സ്കൂൾ",imposter:"കോളേജ്"},
+{category:"സ്ഥലങ്ങൾ",normal:"ആശുപത്രി",imposter:"ക്ലിനിക്"},
+{category:"സ്ഥലങ്ങൾ",normal:"കടപ്പുറം",imposter:"നദി"},
+{category:"സ്ഥലങ്ങൾ",normal:"മല",imposter:"കുന്ന്"},
+{category:"സ്ഥലങ്ങൾ",normal:"വിമാനത്താവളം",imposter:"റെയിൽവേ സ്റ്റേഷൻ"},
+{category:"സ്ഥലങ്ങൾ",normal:"ബസ് സ്റ്റാൻഡ്",imposter:"റെയിൽവേ സ്റ്റേഷൻ"},
+{category:"സ്ഥലങ്ങൾ",normal:"പാർക്ക്",imposter:"കളിസ്ഥലം"},
+{category:"സ്ഥലങ്ങൾ",normal:"മ്യൂസിയം",imposter:"ലൈബ്രറി"},
+{category:"സ്ഥലങ്ങൾ",normal:"ചന്ത",imposter:"മാൾ"},
+{category:"സ്ഥലങ്ങൾ",normal:"ക്ഷേത്രം",imposter:"പള്ളി"},
+
+{category:"ജോലി",normal:"ഡോക്ടർ",imposter:"നഴ്‌സ്"},
+{category:"ജോലി",normal:"ടീച്ചർ",imposter:"പ്രൊഫസർ"},
+{category:"ജോലി",normal:"പോലീസ്",imposter:"സൈനികൻ"},
+{category:"ജോലി",normal:"എഞ്ചിനീയർ",imposter:"ആർക്കിടെക്റ്റ്"},
+{category:"ജോലി",normal:"വക്കീൽ",imposter:"ജഡ്ജി"},
+{category:"ജോലി",normal:"ഷെഫ്",imposter:"ബേക്കർ"},
+{category:"ജോലി",normal:"ഡ്രൈവർ",imposter:"പൈലറ്റ്"},
+{category:"ജോലി",normal:"കർഷകൻ",imposter:"തോട്ടക്കാരൻ"},
+{category:"ജോലി",normal:"മത്സ്യത്തൊഴിലാളി",imposter:"നാവികൻ"},
+{category:"ജോലി",normal:"ഫോട്ടോഗ്രാഫർ",imposter:"വീഡിയോഗ്രാഫർ"},
+
+{category:"കായികം",normal:"ഫുട്ബോൾ",imposter:"ക്രിക്കറ്റ്"},
+{category:"കായികം",normal:"വോളിബോൾ",imposter:"ബാസ്കറ്റ്ബോൾ"},
+{category:"കായികം",normal:"ബാഡ്മിന്റൺ",imposter:"ടെന്നീസ്"},
+{category:"കായികം",normal:"കബഡി",imposter:"ഖോ-ഖോ"},
+{category:"കായികം",normal:"ഹോക്കി",imposter:"ഫുട്ബോൾ"},
+{category:"കായികം",normal:"ചെസ്",imposter:"ലൂഡോ"},
+{category:"കായികം",normal:"കരം",imposter:"ചെസ്"},
+  {category:"കായികം",normal:"നീന്തൽ",imposter:"ഡൈവിംഗ്"},
+{category:"കായികം",normal:"ഓട്ടം",imposter:"മാരത്തൺ"},
+{category:"കായികം",normal:"ജാവലിൻ",imposter:"ഷോട്ട്പുട്ട്"},
+
+{category:"ഉത്സവം",normal:"ഓണം",imposter:"വിഷു"},
+{category:"ഉത്സവം",normal:"ക്രിസ്മസ്",imposter:"ഈദ്"},
+{category:"ഉത്സവം",normal:"ദീപാവലി",imposter:"ഹോളി"},
+{category:"ഉത്സവം",normal:"പൊങ്കൽ",imposter:"വിഷു"},
+{category:"ഉത്സവം",normal:"ഈസ്റ്റർ",imposter:"ക്രിസ്മസ്"},
+{category:"ഉത്സവം",normal:"റംസാൻ",imposter:"ബക്രീദ്"},
+{category:"ഉത്സവം",normal:"നവരാത്രി",imposter:"ദുർഗാപൂജ"},
+{category:"ഉത്സവം",normal:"ഓണം സദ്യ",imposter:"വിഷു സദ്യ"},
+{category:"ഉത്സവം",normal:"അത്തം",imposter:"തിരുവോണം"},
+{category:"ഉത്സവം",normal:"ഹോളി",imposter:"ദീപാവലി"},
+
+{category:"വാഹനങ്ങൾ",normal:"കാർ",imposter:"ജീപ്പ്"},
+{category:"വാഹനങ്ങൾ",normal:"ബസ്",imposter:"ലോറി"},
+{category:"വാഹനങ്ങൾ",normal:"ബൈക്ക്",imposter:"സ്കൂട്ടർ"},
+{category:"വാഹനങ്ങൾ",normal:"ട്രെയിൻ",imposter:"മെട്രോ"},
+{category:"വാഹനങ്ങൾ",normal:"വിമാനം",imposter:"ഹെലികോപ്റ്റർ"},
+{category:"വാഹനങ്ങൾ",normal:"കപ്പൽ",imposter:"ബോട്ട്"},
+{category:"വാഹനങ്ങൾ",normal:"സൈക്കിൾ",imposter:"ഇ-ബൈക്ക്"},
+{category:"വാഹനങ്ങൾ",normal:"ഓട്ടോറിക്ഷ",imposter:"ടാക്സി"},
+{category:"വാഹനങ്ങൾ",normal:"ട്രാക്ടർ",imposter:"ജെസിബി"},
+{category:"വാഹനങ്ങൾ",normal:"ആംബുലൻസ്",imposter:"ഫയർ എൻജിൻ"},
+
+{category:"ടെക്നോളജി",normal:"മൊബൈൽ",imposter:"ടാബ്ലറ്റ്"},
+{category:"ടെക്നോളജി",normal:"ലാപ്ടോപ്പ്",imposter:"ഡെസ്ക്ടോപ്പ്"},
+{category:"ടെക്നോളജി",normal:"കീബോർഡ്",imposter:"മൗസ്"},
+{category:"ടെക്നോളജി",normal:"പ്രിന്റർ",imposter:"സ്കാനർ"},
+{category:"ടെക്നോളജി",normal:"ഹെഡ്ഫോൺ",imposter:"ഇയർബഡ്"},
+{category:"ടെക്നോളജി",normal:"വൈഫൈ",imposter:"ബ്ലൂടൂത്ത്"},
+{category:"ടെക്നോളജി",normal:"യൂട്യൂബ്",imposter:"നെറ്റ്ഫ്ലിക്സ്"},
+{category:"ടെക്നോളജി",normal:"വാട്സ്ആപ്പ്",imposter:"ടെലഗ്രാം"},
+{category:"ടെക്നോളജി",normal:"ഇൻസ്റ്റാഗ്രാം",imposter:"ഫേസ്ബുക്ക്"},
+{category:"ടെക്നോളജി",normal:"ഗൂഗിൾ",imposter:"ബിംഗ്"}
 ];
 
 let players = ["", "", ""];
@@ -178,20 +328,28 @@ let roles = [];
 let currentPlayer = 0;
 let selectedWords = null;
 let votes = {};
+let availableWords = [...words];
 
 function showScreen(id){
-  document.querySelectorAll(".app > div").forEach(div=>div.classList.add("hidden"));
+  document.querySelectorAll(".app > div").forEach(div => {
+    div.classList.add("hidden");
+  });
   document.getElementById(id).classList.remove("hidden");
 }
 
 function renderPlayers(){
-  const box=document.getElementById("playersBox");
-  box.innerHTML="";
-  players.forEach((player,index)=>{
-    box.innerHTML+=`
+  const box = document.getElementById("playersBox");
+  box.innerHTML = "";
+
+  players.forEach((player, index) => {
+    box.innerHTML += `
       <div class="player-row">
-        <input type="text" placeholder="Player ${index+1}" value="${player}"
-        oninput="players[${index}] = this.value">
+        <input 
+          type="text" 
+          placeholder="Player ${index + 1}" 
+          value="${player}"
+          oninput="players[${index}] = this.value"
+        >
         <button class="remove" onclick="removePlayer(${index})">X</button>
       </div>
     `;
@@ -204,73 +362,100 @@ function addPlayer(){
 }
 
 function removePlayer(index){
-  if(players.length<=3){
+  if(players.length <= 3){
     alert("Minimum 3 players needed");
     return;
   }
-  players.splice(index,1);
+
+  players.splice(index, 1);
   renderPlayers();
 }
 
-function startGame(){
-  const validPlayers=players.filter(p=>p.trim()!=="");
+function getWord(){
+  if(availableWords.length === 0){
+    alert("All words are used. Click Quit Game and start again.");
+    return null;
+  }
 
-  if(validPlayers.length<3){
+  const randomIndex = Math.floor(Math.random() * availableWords.length);
+  const selected = availableWords[randomIndex];
+
+  availableWords.splice(randomIndex, 1);
+
+  return selected;
+}
+
+function startGame(){
+  const validPlayers = players.filter(p => p.trim() !== "");
+
+  if(validPlayers.length < 3){
     alert("Please add at least 3 players");
     return;
   }
 
-  selectedWords=words[Math.floor(Math.random()*words.length)];
-  const imposterIndex=Math.floor(Math.random()*validPlayers.length);
+  selectedWords = getWord();
 
-  roles=validPlayers.map((name,index)=>({
-    name:name,
-    role:index===imposterIndex ? "IMPOSTER" : "PLAYER",
-    word:index===imposterIndex ? selectedWords.imposter : selectedWords.normal
-  }));
+  if(!selectedWords){
+    return;
+  }
 
-  currentPlayer=0;
-  votes={};
+  const imposterIndex = Math.floor(Math.random() * validPlayers.length);
+
+  roles = validPlayers.map((name, index) => {
+    return {
+      name: name,
+      role: index === imposterIndex ? "IMPOSTER" : "PLAYER",
+      word: index === imposterIndex ? selectedWords.imposter : selectedWords.normal
+    };
+  });
+
+  currentPlayer = 0;
+  votes = {};
   loadRevealScreen();
   showScreen("reveal");
 }
 
 function loadRevealScreen(){
-  document.getElementById("playerName").innerText=roles[currentPlayer].name;
+  document.getElementById("playerName").innerText = roles[currentPlayer].name;
   document.getElementById("wordBox").classList.add("hidden");
   document.getElementById("showBtn").classList.remove("hidden");
   document.getElementById("nextBtn").classList.add("hidden");
 }
 
 function showWord(){
-  document.getElementById("categoryText").innerText="Category: "+selectedWords.category;
-  document.getElementById("secretWord").innerText=roles[currentPlayer].word;
+  document.getElementById("categoryText").innerText = "Category: " + selectedWords.category;
+  document.getElementById("secretWord").innerText = roles[currentPlayer].word;
+
   document.getElementById("wordBox").classList.remove("hidden");
   document.getElementById("showBtn").classList.add("hidden");
   document.getElementById("nextBtn").classList.remove("hidden");
 
-  document.getElementById("nextBtn").innerText =
-    currentPlayer===roles.length-1 ? "Start Discussion" : "Next Player";
+  if(currentPlayer === roles.length - 1){
+    document.getElementById("nextBtn").innerText = "Start Discussion";
+  }else{
+    document.getElementById("nextBtn").innerText = "Next Player";
+  }
 }
 
 function nextPlayer(){
-  if(currentPlayer<roles.length-1){
+  if(currentPlayer < roles.length - 1){
     currentPlayer++;
     loadRevealScreen();
   }else{
-    document.getElementById("discussionCategory").innerText=selectedWords.category;
+    document.getElementById("discussionCategory").innerText = selectedWords.category;
     showScreen("discussion");
   }
 }
 
 function showVoting(){
-  const voteBox=document.getElementById("voteBox");
-  voteBox.innerHTML="";
-  votes={};
+  const voteBox = document.getElementById("voteBox");
+  voteBox.innerHTML = "";
+  votes = {};
 
-  roles.forEach(player=>{
-    votes[player.name]=0;
-    voteBox.innerHTML+=`
+  roles.forEach(player => {
+    votes[player.name] = 0;
+
+    voteBox.innerHTML += `
       <button class="vote-btn" onclick="votePlayer('${player.name}')">
         ${player.name} - Votes: <span id="vote-${player.name}">0</span>
       </button>
@@ -282,55 +467,57 @@ function showVoting(){
 
 function votePlayer(name){
   votes[name]++;
-  document.getElementById("vote-"+name).innerText=votes[name];
+  document.getElementById("vote-" + name).innerText = votes[name];
 }
 
 function calculateResult(){
-  let votedOut="";
-  let maxVotes=-1;
+  let votedOut = "";
+  let maxVotes = -1;
 
   for(let name in votes){
-    if(votes[name]>maxVotes){
-      maxVotes=votes[name];
-      votedOut=name;
+    if(votes[name] > maxVotes){
+      maxVotes = votes[name];
+      votedOut = name;
     }
   }
 
-  if(maxVotes===0){
+  if(maxVotes === 0){
     alert("Please vote before finishing");
     return;
   }
 
-  const imposter=roles.find(p=>p.role==="IMPOSTER");
+  const imposter = roles.find(p => p.role === "IMPOSTER");
 
-  if(votedOut===imposter.name){
-    document.getElementById("winnerText").innerText="Players Win 🎉";
+  if(votedOut === imposter.name){
+    document.getElementById("winnerText").innerText = "Players Win 🎉";
   }else{
-    document.getElementById("winnerText").innerText="Imposter Wins 😈";
+    document.getElementById("winnerText").innerText = "Imposter Wins 😈";
   }
 
-  document.getElementById("resultDetails").innerHTML=`
+  document.getElementById("resultDetails").innerHTML = `
     Voted Out: ${votedOut}<br><br>
     Imposter: ${imposter.name}<br><br>
     Normal Word: ${selectedWords.normal}<br>
-    Imposter Word: ${selectedWords.imposter}
+    Imposter Word: ${selectedWords.imposter}<br><br>
+    Remaining Word Pairs: ${availableWords.length}
   `;
 
   showScreen("result");
 }
 
 function startNewRound(){
-  votes={};
-  currentPlayer=0;
+  currentPlayer = 0;
+  votes = {};
   startGame();
 }
 
 function resetGame(){
-  players=["", "", ""];
-  roles=[];
-  currentPlayer=0;
-  selectedWords=null;
-  votes={};
+  players = ["", "", ""];
+  roles = [];
+  currentPlayer = 0;
+  selectedWords = null;
+  votes = {};
+  availableWords = [...words];
   renderPlayers();
   showScreen("home");
 }
