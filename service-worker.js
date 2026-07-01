@@ -1,4 +1,4 @@
-const CACHE_NAME = "malayalam-imposter-v6";
+const CACHE_NAME = "malayalam-imposter-v7";
 
 const filesToCache = [
   "./",
