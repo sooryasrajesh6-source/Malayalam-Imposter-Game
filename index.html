@@ -1,485 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Malayalam Imposter Game</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{
-  min-height:100vh;
-  background:linear-gradient(135deg,#111827,#1f2937,#450a0a);
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
-}
-.app{
-  width:100%;
-  max-width:430px;
-  background:#111827;
-  padding:25px;
-  border-radius:22px;
-  box-shadow:0 0 35px rgba(0,0,0,.5);
-}
-h1{text-align:center;margin-bottom:10px;font-size:30px}
-p{text-align:center;color:#d1d5db;line-height:1.6;margin-bottom:20px}
-button{
-  width:100%;
-  padding:15px;
-  border:none;
-  border-radius:14px;
-  background:#ef4444;
-  color:white;
-  font-size:18px;
-  font-weight:bold;
-  margin-top:12px;
-  cursor:pointer;
-}
-button:hover{background:#dc2626}
-.outline{background:transparent;border:2px solid #ef4444;color:#ef4444}
-.quit{background:#374151}
-input{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:12px;
-  margin-top:10px;
-  font-size:17px;
-}
-label{display:block;margin-top:15px;color:#e5e7eb;font-weight:bold}
-.player-row{display:flex;gap:8px;align-items:center}
-.player-row input{flex:1}
-.remove{width:50px;background:#dc2626}
-.card{
-  background:white;
-  color:#111827;
-  padding:30px;
-  border-radius:20px;
-  text-align:center;
-  margin:25px 0;
-}
-.word{font-size:32px;font-weight:bold}
-.small{color:#374151;margin-bottom:12px;font-weight:bold}
-.vote-btn{background:#374151}
-.result-text{font-size:20px;line-height:1.8;font-weight:bold}
-.hidden{display:none}
-.badge{
-  background:#facc15;
-  color:#111827;
-  padding:8px 14px;
-  border-radius:20px;
-  display:inline-block;
-  font-weight:bold;
-  margin:10px auto;
-}
-.center{text-align:center}
-</style>
+  <title>Malayalam Imposter Game</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#ef4444" />
 </head>
 
 <body>
 
-<div class="app">
+  <main class="app">
 
-  <div id="home">
-    <h1>Find The Imposter</h1>
-    <button onclick="showScreen('setup')">Start Game</button>
-    <button class="outline" onclick="showScreen('rules')">How to Play</button>
-  </div>
+    <!-- HOME -->
+    <section id="home" class="screen active">
+      <h1>Find The Imposter</h1>
+      <p class="subtitle">Malayalam + English Party Game</p>
 
-  <div id="rules" class="hidden">
-    <h1>How to Play</h1>
-    <p>
-      Add minimum 3 players.<br><br>
-      Select one or more imposters.<br><br>
-      Normal players see only the secret word.<br><br>
-      Imposters see only a hint, not the word.<br><br>
-      Discuss, vote, then click Finish Game.
-    </p>
-    <button onclick="showScreen('home')">Back</button>
-  </div>
+      <button onclick="showScreen('setup')">Start Game</button>
+      <button class="outline" onclick="showScreen('rules')">How to Play</button>
+    </section>
 
-  <div id="setup" class="hidden">
-    <h1>Add Players</h1>
-    <div id="playersBox"></div>
+    <!-- RULES -->
+    <section id="rules" class="screen">
+      <h1>How to Play</h1>
 
-    <button class="outline" onclick="addPlayer()">+ Add Player</button>
+      <p class="info">
+        Add minimum 3 players.<br><br>
+        Select one or more imposters.<br><br>
+        Normal players see only the secret word.<br><br>
+        Imposters see only the hint, not the word.<br><br>
+        Discuss, vote, and click Finish Game.
+      </p>
 
-    <label>Number of Imposters</label>
-    <input type="number" id="imposterCountInput" min="1" value="1">
+      <button onclick="showScreen('home')">Back</button>
+    </section>
 
-    <button onclick="startGame()">Begin Game</button>
-    <button class="quit" onclick="resetGame()">Quit Game</button>
-  </div>
+    <!-- SETUP -->
+    <section id="setup" class="screen">
+      <h1>Add Players</h1>
 
-  <div id="reveal" class="hidden">
-    <h1 id="playerName"></h1>
-    <p>Pass phone to this player</p>
+      <div id="playersBox"></div>
 
-    <div id="wordBox" class="card hidden">
-      <p class="small" id="categoryText"></p>
-      <div class="word" id="secretWord"></div>
-    </div>
+      <button class="outline" onclick="addPlayer()">+ Add Player</button>
 
-    <button id="showBtn" onclick="showWord()">Show My Word</button>
-    <button id="nextBtn" class="hidden" onclick="nextPlayer()">Next Player</button>
-    <button class="quit" onclick="resetGame()">Quit Game</button>
-  </div>
+      <label>Number of Imposters</label>
+      <input type="number" id="imposterCountInput" min="1" value="1" />
 
-  <div id="discussion" class="hidden">
-    <h1>Discussion Time</h1>
-    <div class="center">
-      <span class="badge" id="discussionCategory"></span>
-    </div>
-    <p>Ask questions and find the imposter.</p>
-    <button onclick="showVoting()">Go to Voting</button>
-    <button class="quit" onclick="resetGame()">Quit Game</button>
-  </div>
+      <label>Discussion Time</label>
+      <select id="timerInput">
+        <option value="60">1 Minute</option>
+        <option value="120">2 Minutes</option>
+        <option value="180">3 Minutes</option>
+        <option value="300">5 Minutes</option>
+      </select>
 
-  <div id="vote" class="hidden">
-    <h1>Vote Imposter</h1>
-    <p>Tap player names to vote. Game finishes only after clicking Finish Game.</p>
-    <div id="voteBox"></div>
-    <button onclick="calculateResult()">Finish Game</button>
-    <button class="quit" onclick="resetGame()">Quit Game</button>
-  </div>
+      <button onclick="startGame()">Begin Game</button>
+      <button class="quit" onclick="resetGame()">Quit Game</button>
+    </section>
 
-  <div id="result" class="hidden">
-    <h1 id="winnerText"></h1>
-    <div class="card">
-      <div class="result-text" id="resultDetails"></div>
-    </div>
-    <button onclick="startNewRound()">Next Round</button>
-    <button class="quit" onclick="resetGame()">Quit Game</button>
-  </div>
+    <!-- REVEAL -->
+    <section id="reveal" class="screen">
+      <h1 id="playerName"></h1>
+      <p class="subtitle">Pass phone to this player</p>
 
-</div>
-
-<script>
-const words = [
-  {category:"ഭക്ഷണം",categoryEnglish:"Food",normal:"ബിരിയാണി / Biriyani"},
-  {category:"ഭക്ഷണം",categoryEnglish:"Food",normal:"ദോശ / Dosa"},
-  {category:"ഭക്ഷണം",categoryEnglish:"Food",normal:"പുട്ട് / Puttu"},
-  {category:"ഭക്ഷണം",categoryEnglish:"Food",normal:"അപ്പം / Appam"},
-  {category:"ഭക്ഷണം",categoryEnglish:"Food",normal:"പൊറോട്ട / Porotta"},
-  {category:"ഭക്ഷണം",categoryEnglish:"Food",normal:"ഇഡ്ലി / Idli"},
-  {category:"ഭക്ഷണം",categoryEnglish:"Food",normal:"വട / Vada"},
-  {category:"ഭക്ഷണം",categoryEnglish:"Food",normal:"പായസം / Payasam"},
-  {category:"ഭക്ഷണം",categoryEnglish:"Food",normal:"സമോസ / Samosa"},
-  {category:"ഭക്ഷണം",categoryEnglish:"Food",normal:"ചപ്പാത്തി / Chapati"},
-
-  {category:"മൃഗങ്ങൾ",categoryEnglish:"Animals",normal:"ആന / Elephant"},
-  {category:"മൃഗങ്ങൾ",categoryEnglish:"Animals",normal:"കടുവ / Tiger"},
-  {category:"മൃഗങ്ങൾ",categoryEnglish:"Animals",normal:"സിംഹം / Lion"},
-  {category:"മൃഗങ്ങൾ",categoryEnglish:"Animals",normal:"നായ / Dog"},
-  {category:"മൃഗങ്ങൾ",categoryEnglish:"Animals",normal:"പൂച്ച / Cat"},
-  {category:"മൃഗങ്ങൾ",categoryEnglish:"Animals",normal:"കുതിര / Horse"},
-  {category:"മൃഗങ്ങൾ",categoryEnglish:"Animals",normal:"പശു / Cow"},
-  {category:"മൃഗങ്ങൾ",categoryEnglish:"Animals",normal:"മുയൽ / Rabbit"},
-  {category:"മൃഗങ്ങൾ",categoryEnglish:"Animals",normal:"കുരങ്ങ് / Monkey"},
-  {category:"മൃഗങ്ങൾ",categoryEnglish:"Animals",normal:"കരടി / Bear"},
-
-  {category:"സ്ഥലങ്ങൾ",categoryEnglish:"Places",normal:"സ്കൂൾ / School"},
-  {category:"സ്ഥലങ്ങൾ",categoryEnglish:"Places",normal:"കോളേജ് / College"},
-  {category:"സ്ഥലങ്ങൾ",categoryEnglish:"Places",normal:"ആശുപത്രി / Hospital"},
-  {category:"സ്ഥലങ്ങൾ",categoryEnglish:"Places",normal:"കടപ്പുറം / Beach"},
-  {category:"സ്ഥലങ്ങൾ",categoryEnglish:"Places",normal:"മല / Mountain"},
-  {category:"സ്ഥലങ്ങൾ",categoryEnglish:"Places",normal:"പാർക്ക് / Park"},
-  {category:"സ്ഥലങ്ങൾ",categoryEnglish:"Places",normal:"ലൈബ്രറി / Library"},
-  {category:"സ്ഥലങ്ങൾ",categoryEnglish:"Places",normal:"മാൾ / Mall"},
-  {category:"സ്ഥലങ്ങൾ",categoryEnglish:"Places",normal:"വിമാനത്താവളം / Airport"},
-  {category:"സ്ഥലങ്ങൾ",categoryEnglish:"Places",normal:"റെയിൽവേ സ്റ്റേഷൻ / Railway Station"},
-
-  {category:"ജോലി",categoryEnglish:"Jobs",normal:"ഡോക്ടർ / Doctor"},
-  {category:"ജോലി",categoryEnglish:"Jobs",normal:"നഴ്‌സ് / Nurse"},
-  {category:"ജോലി",categoryEnglish:"Jobs",normal:"ടീച്ചർ / Teacher"},
-  {category:"ജോലി",categoryEnglish:"Jobs",normal:"പോലീസ് / Police"},
-  {category:"ജോലി",categoryEnglish:"Jobs",normal:"എഞ്ചിനീയർ / Engineer"},
-  {category:"ജോലി",categoryEnglish:"Jobs",normal:"വക്കീൽ / Lawyer"},
-  {category:"ജോലി",categoryEnglish:"Jobs",normal:"പൈലറ്റ് / Pilot"},
-  {category:"ജോലി",categoryEnglish:"Jobs",normal:"ഷെഫ് / Chef"},
-  {category:"ജോലി",categoryEnglish:"Jobs",normal:"ഡ്രൈവർ / Driver"},
-  {category:"ജോലി",categoryEnglish:"Jobs",normal:"കർഷകൻ / Farmer"},
-
-  {category:"കായികം",categoryEnglish:"Sports",normal:"ഫുട്ബോൾ / Football"},
-  {category:"കായികം",categoryEnglish:"Sports",normal:"ക്രിക്കറ്റ് / Cricket"},
-  {category:"കായികം",categoryEnglish:"Sports",normal:"വോളിബോൾ / Volleyball"},
-  {category:"കായികം",categoryEnglish:"Sports",normal:"ബാഡ്മിന്റൺ / Badminton"},
-  {category:"കായികം",categoryEnglish:"Sports",normal:"ടെന്നീസ് / Tennis"},
-  {category:"കായികം",categoryEnglish:"Sports",normal:"ചെസ് / Chess"},
-  {category:"കായികം",categoryEnglish:"Sports",normal:"കരം / Carrom"},
-  {category:"കായികം",categoryEnglish:"Sports",normal:"നീന്തൽ / Swimming"},
-  {category:"കായികം",categoryEnglish:"Sports",normal:"കബഡി / Kabaddi"},
-  {category:"കായികം",categoryEnglish:"Sports",normal:"ഓട്ടം / Running"},
-
-  {category:"ടെക്നോളജി",categoryEnglish:"Technology",normal:"മൊബൈൽ / Mobile"},
-  {category:"ടെക്നോളജി",categoryEnglish:"Technology",normal:"ലാപ്ടോപ്പ് / Laptop"},
-  {category:"ടെക്നോളജി",categoryEnglish:"Technology",normal:"കീബോർഡ് / Keyboard"},
-  {category:"ടെക്നോളജി",categoryEnglish:"Technology",normal:"മൗസ് / Mouse"},
-  {category:"ടെക്നോളജി",categoryEnglish:"Technology",normal:"പ്രിന്റർ / Printer"},
-  {category:"ടെക്നോളജി",categoryEnglish:"Technology",normal:"വൈഫൈ / WiFi"},
-  {category:"ടെക്നോളജി",categoryEnglish:"Technology",normal:"ബ്ലൂടൂത്ത് / Bluetooth"},
-  {category:"ടെക്നോളജി",categoryEnglish:"Technology",normal:"യൂട്യൂബ് / YouTube"},
-  {category:"ടെക്നോളജി",categoryEnglish:"Technology",normal:"വാട്സ്ആപ്പ് / WhatsApp"},
-  {category:"ടെക്നോളജി",categoryEnglish:"Technology",normal:"ഗൂഗിൾ / Google"}
-];
-
-let players = ["", "", ""];
-let roles = [];
-let currentPlayer = 0;
-let selectedWords = null;
-let votes = {};
-let scores = {};
-let availableWords = [...words];
-
-function showScreen(id){
-  document.querySelectorAll(".app > div").forEach(div => {
-    div.classList.add("hidden");
-  });
-  document.getElementById(id).classList.remove("hidden");
-}
-
-function renderPlayers(){
-  const box = document.getElementById("playersBox");
-  box.innerHTML = "";
-
-  players.forEach((player,index)=>{
-    box.innerHTML += `
-      <div class="player-row">
-        <input 
-          type="text" 
-          placeholder="Player ${index + 1}" 
-          value="${player}"
-          oninput="players[${index}] = this.value"
-        >
-        <button class="remove" onclick="removePlayer(${index})">X</button>
+      <div id="wordBox" class="card hidden">
+        <p id="categoryText" class="hint"></p>
+        <h2 id="secretWord"></h2>
       </div>
-    `;
-  });
-}
 
-function addPlayer(){
-  players.push("");
-  renderPlayers();
-}
+      <button id="showBtn" onclick="showWord()">Show My Word</button>
+      <button id="nextBtn" class="hidden" onclick="nextPlayer()">Next Player</button>
+      <button class="quit" onclick="resetGame()">Quit Game</button>
+    </section>
 
-function removePlayer(index){
-  if(players.length <= 3){
-    alert("Minimum 3 players needed");
-    return;
-  }
-  players.splice(index,1);
-  renderPlayers();
-}
+    <!-- DISCUSSION -->
+    <section id="discussion" class="screen">
+      <h1>Discussion Time</h1>
 
-function getWord(){
-  if(availableWords.length === 0){
-    alert("All words are used. Click Quit Game and start again.");
-    return null;
-  }
+      <div class="timer" id="timerDisplay">60</div>
 
-  const randomIndex = Math.floor(Math.random() * availableWords.length);
-  const selected = availableWords[randomIndex];
-  availableWords.splice(randomIndex,1);
-  return selected;
-}
+      <p class="info">
+        Ask questions and find the imposter.
+      </p>
 
-function startGame(){
-  const validPlayers = players.filter(p => p.trim() !== "");
+      <button onclick="showVoting()">Go to Voting</button>
+      <button class="quit" onclick="resetGame()">Quit Game</button>
+    </section>
 
-  if(validPlayers.length < 3){
-    alert("Please add at least 3 players");
-    return;
-  }
+    <!-- VOTE -->
+    <section id="vote" class="screen">
+      <h1>Vote Imposter</h1>
+      <p class="subtitle">Tap player names to vote</p>
 
-  let imposterCount = Number(document.getElementById("imposterCountInput").value);
+      <div id="voteBox"></div>
 
-  if(imposterCount < 1){
-    alert("Minimum 1 imposter needed");
-    return;
-  }
+      <button onclick="calculateResult()">Finish Game</button>
+      <button class="quit" onclick="resetGame()">Quit Game</button>
+    </section>
 
-  if(imposterCount >= validPlayers.length){
-    alert("Imposters must be less than total players");
-    return;
-  }
+    <!-- RESULT -->
+    <section id="result" class="screen">
+      <h1 id="winnerText"></h1>
 
-  selectedWords = getWord();
-  if(!selectedWords) return;
+      <div class="card">
+        <div id="resultDetails" class="result-text"></div>
+      </div>
 
-  validPlayers.forEach(name => {
-    if(scores[name] === undefined){
-      scores[name] = 0;
+      <button onclick="startNewRound()">Next Round</button>
+      <button class="quit" onclick="resetGame()">Quit Game</button>
+    </section>
+
+  </main>
+
+  <script src="words.js"></script>
+  <script src="script.js"></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js");
     }
-  });
-
-  let imposterIndexes = [];
-
-  while(imposterIndexes.length < imposterCount){
-    const randomIndex = Math.floor(Math.random() * validPlayers.length);
-    if(!imposterIndexes.includes(randomIndex)){
-      imposterIndexes.push(randomIndex);
-    }
-  }
-
-  roles = validPlayers.map((name,index)=>{
-    const isImposter = imposterIndexes.includes(index);
-
-    return {
-      name:name,
-      role:isImposter ? "IMPOSTER" : "PLAYER",
-      word:isImposter ? "" : selectedWords.normal
-    };
-  });
-
-  currentPlayer = 0;
-  votes = {};
-  loadRevealScreen();
-  showScreen("reveal");
-}
-
-function loadRevealScreen(){
-  document.getElementById("playerName").innerText = roles[currentPlayer].name;
-  document.getElementById("wordBox").classList.add("hidden");
-  document.getElementById("showBtn").classList.remove("hidden");
-  document.getElementById("nextBtn").classList.add("hidden");
-}
-
-function showWord(){
-  const player = roles[currentPlayer];
-
-  if(player.role === "IMPOSTER"){
-    document.getElementById("categoryText").innerText =
-      "Hint: " + selectedWords.category + " / " + selectedWords.categoryEnglish;
-
-    document.getElementById("secretWord").innerText = "You are the Imposter";
-  }else{
-    document.getElementById("categoryText").innerText = "";
-    document.getElementById("secretWord").innerText = player.word;
-  }
-
-  document.getElementById("wordBox").classList.remove("hidden");
-  document.getElementById("showBtn").classList.add("hidden");
-  document.getElementById("nextBtn").classList.remove("hidden");
-
-  document.getElementById("nextBtn").innerText =
-    currentPlayer === roles.length - 1 ? "Start Discussion" : "Next Player";
-}
-
-function nextPlayer(){
-  if(currentPlayer < roles.length - 1){
-    currentPlayer++;
-    loadRevealScreen();
-  }else{
-    document.getElementById("discussionCategory").innerText =
-      selectedWords.category + " / " + selectedWords.categoryEnglish;
-    showScreen("discussion");
-  }
-}
-
-function showVoting(){
-  const voteBox = document.getElementById("voteBox");
-  voteBox.innerHTML = "";
-  votes = {};
-
-  roles.forEach(player=>{
-    votes[player.name] = 0;
-
-    voteBox.innerHTML += `
-      <button class="vote-btn" onclick="votePlayer('${player.name}')">
-        ${player.name} - Votes: <span id="vote-${player.name}">0</span>
-      </button>
-    `;
-  });
-
-  showScreen("vote");
-}
-
-function votePlayer(name){
-  votes[name]++;
-  document.getElementById("vote-" + name).innerText = votes[name];
-}
-
-function calculateResult(){
-  let votedOutNames = [];
-  let maxVotes = -1;
-
-  for(let name in votes){
-    if(votes[name] > maxVotes){
-      maxVotes = votes[name];
-      votedOutNames = [name];
-    }else if(votes[name] === maxVotes){
-      votedOutNames.push(name);
-    }
-  }
-
-  if(maxVotes === 0){
-    alert("Please vote before finishing");
-    return;
-  }
-
-  const imposters = roles.filter(p => p.role === "IMPOSTER");
-  const imposterNames = imposters.map(p => p.name);
-
-  const allImpostersFound = imposterNames.every(name => votedOutNames.includes(name));
-
-  if(allImpostersFound){
-    document.getElementById("winnerText").innerText = "Players Win 🎉";
-
-    roles.forEach(player=>{
-      if(player.role === "PLAYER"){
-        scores[player.name] += 1;
-      }
-    });
-
-  }else{
-    document.getElementById("winnerText").innerText = "Imposters Win 😈";
-
-    imposters.forEach(imposter=>{
-      scores[imposter.name] += 2;
-    });
-  }
-
-  let scoreHTML = "<br><br>Scores:<br>";
-
-  for(let name in scores){
-    scoreHTML += `${name}: ${scores[name]}<br>`;
-  }
-
-  document.getElementById("resultDetails").innerHTML = `
-    Voted Out: ${votedOutNames.join(", ")}<br><br>
-    Imposters: ${imposterNames.join(", ")}<br><br>
-    Secret Word: ${selectedWords.normal}<br>
-    Hint: ${selectedWords.category} / ${selectedWords.categoryEnglish}<br><br>
-    Remaining Words: ${availableWords.length}
-    ${scoreHTML}
-  `;
-
-  showScreen("result");
-}
-
-function startNewRound(){
-  currentPlayer = 0;
-  votes = {};
-  startGame();
-}
-
-function resetGame(){
-  players = ["", "", ""];
-  roles = [];
-  currentPlayer = 0;
-  selectedWords = null;
-  votes = {};
-  scores = {};
-  availableWords = [...words];
-  renderPlayers();
-  showScreen("home");
-}
-
-renderPlayers();
-</script>
+  </script>
 
 </body>
 </html>
