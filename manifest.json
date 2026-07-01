@@ -1,7 +1,7 @@
 {
   "name": "Malayalam Imposter Game",
   "short_name": "Imposter",
-  "description": "A Malayalam and English party game to find the hidden imposter.",
+  "description": "Malayalam and English party game to find the hidden imposter.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
