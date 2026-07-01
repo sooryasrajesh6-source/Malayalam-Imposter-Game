@@ -1,0 +1,224 @@
+/* ===========================
+   RESET
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e293b,#450a0a);
+    color:#fff;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+/* ===========================
+   APP
+=========================== */
+
+.app{
+    width:100%;
+    max-width:430px;
+    min-height:720px;
+    background:rgba(17,24,39,.90);
+    border-radius:25px;
+    backdrop-filter:blur(12px);
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+    overflow:hidden;
+    position:relative;
+}
+
+.screen{
+    display:none;
+    padding:30px 25px;
+    animation:fade .4s ease;
+}
+
+.screen.active{
+    display:block;
+}
+
+/* ===========================
+   TEXT
+=========================== */
+
+h1{
+    text-align:center;
+    font-size:34px;
+    margin-bottom:15px;
+    color:#ffffff;
+}
+
+.subtitle{
+    text-align:center;
+    color:#cbd5e1;
+    margin-bottom:30px;
+    line-height:1.7;
+}
+
+.info{
+    text-align:center;
+    line-height:1.8;
+    color:#d1d5db;
+    margin-bottom:25px;
+}
+
+label{
+    display:block;
+    margin-top:20px;
+    margin-bottom:8px;
+    font-weight:bold;
+    color:#f3f4f6;
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:15px;
+    border:none;
+    border-radius:15px;
+    font-size:17px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.25s;
+    background:#ef4444;
+    color:#fff;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    background:#dc2626;
+}
+
+button:active{
+    transform:scale(.98);
+}
+
+.outline{
+    background:transparent;
+    border:2px solid #ef4444;
+    color:#ef4444;
+}
+
+.outline:hover{
+    background:#ef4444;
+    color:white;
+}
+
+.quit{
+    background:#374151;
+}
+
+.quit:hover{
+    background:#4b5563;
+}
+
+/* ===========================
+   INPUT
+=========================== */
+
+input,
+select{
+    width:100%;
+    padding:14px;
+    border:none;
+    outline:none;
+    border-radius:14px;
+    font-size:16px;
+    margin-bottom:5px;
+    background:#f8fafc;
+}
+
+input:focus,
+select:focus{
+    outline:3px solid #ef4444;
+}
+
+/* ===========================
+   PLAYER BOX
+=========================== */
+
+.player-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.player-row input{
+    flex:1;
+}
+
+.remove{
+    width:55px;
+    background:#dc2626;
+}
+
+.remove:hover{
+    background:#b91c1c;
+}
+
+/* ===========================
+   CARD
+=========================== */
+
+.card{
+    margin:30px 0;
+    background:white;
+    color:#111827;
+    border-radius:20px;
+    padding:30px;
+    text-align:center;
+    box-shadow:0 15px 35px rgba(0,0,0,.18);
+}
+
+.card h2{
+    font-size:34px;
+}
+
+.hint{
+    font-weight:bold;
+    color:#dc2626;
+    margin-bottom:15px;
+}
+
+/* ===========================
+   TIMER
+=========================== */
+
+.timer{
+    width:170px;
+    height:170px;
+    margin:20px auto;
+    border-radius:50%;
+    background:#ef4444;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:60px;
+    font-weight:bold;
+    box-shadow:0 0 40px rgba(239,68,68,.5);
+}
+
+/* ===========================
+   VOTE
+=========================== */
+
+.vote-btn{
+    background:#374151;
+    margin-top:12px;
+}
+
+.vote-btn:hover{
+    background:#4b5563;
+}
