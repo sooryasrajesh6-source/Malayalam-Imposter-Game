@@ -3,127 +3,101 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Malayalam Imposter Game</title>
-
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#ef4444" />
 </head>
-
 <body>
+<main class="app">
 
-  <main class="app">
+  <section id="home" class="screen active">
+    <h1>Find The Imposter</h1>
+    <p class="subtitle">Malayalam + English Party Game</p>
+    <button onclick="showScreen('setup')">Start Game</button>
+    <button class="outline" onclick="showScreen('rules')">How to Play</button>
+  </section>
 
-    <!-- HOME -->
-    <section id="home" class="screen active">
-      <h1>Find The Imposter</h1>
-      <p class="subtitle">Malayalam + English Party Game</p>
+  <section id="rules" class="screen">
+    <h1>How to Play</h1>
+    <p class="info">
+      Add minimum 3 players.<br><br>
+      Select one or more imposters.<br><br>
+      Normal players see only the secret word.<br><br>
+      Imposters see only the hint, not the word.<br><br>
+      Discuss, vote, and click Finish Game.
+    </p>
+    <button onclick="showScreen('home')">Back</button>
+  </section>
 
-      <button onclick="showScreen('setup')">Start Game</button>
-      <button class="outline" onclick="showScreen('rules')">How to Play</button>
-    </section>
+  <section id="setup" class="screen">
+    <h1>Add Players</h1>
+    <div id="playersBox"></div>
 
-    <!-- RULES -->
-    <section id="rules" class="screen">
-      <h1>How to Play</h1>
+    <button class="outline" onclick="addPlayer()">+ Add Player</button>
 
-      <p class="info">
-        Add minimum 3 players.<br><br>
-        Select one or more imposters.<br><br>
-        Normal players see only the secret word.<br><br>
-        Imposters see only the hint, not the word.<br><br>
-        Discuss, vote, and click Finish Game.
-      </p>
+    <label>Number of Imposters</label>
+    <input type="number" id="imposterCountInput" min="1" value="1" />
 
-      <button onclick="showScreen('home')">Back</button>
-    </section>
+    <label>Discussion Time</label>
+    <select id="timerInput">
+      <option value="60">1 Minute</option>
+      <option value="120">2 Minutes</option>
+      <option value="180">3 Minutes</option>
+      <option value="300">5 Minutes</option>
+    </select>
 
-    <!-- SETUP -->
-    <section id="setup" class="screen">
-      <h1>Add Players</h1>
+    <button onclick="startGame()">Begin Game</button>
+    <button class="quit" onclick="resetGame()">Quit Game</button>
+  </section>
 
-      <div id="playersBox"></div>
+  <section id="reveal" class="screen">
+    <h1 id="playerName"></h1>
+    <p class="subtitle">Pass phone to this player</p>
 
-      <button class="outline" onclick="addPlayer()">+ Add Player</button>
+    <div id="wordBox" class="card hidden">
+      <p id="categoryText" class="hint"></p>
+      <h2 id="secretWord"></h2>
+    </div>
 
-      <label>Number of Imposters</label>
-      <input type="number" id="imposterCountInput" min="1" value="1" />
+    <button id="showBtn" onclick="showWord()">Show My Word</button>
+    <button id="nextBtn" class="hidden" onclick="nextPlayer()">Next Player</button>
+    <button class="quit" onclick="resetGame()">Quit Game</button>
+  </section>
 
-      <label>Discussion Time</label>
-      <select id="timerInput">
-        <option value="60">1 Minute</option>
-        <option value="120">2 Minutes</option>
-        <option value="180">3 Minutes</option>
-        <option value="300">5 Minutes</option>
-      </select>
+  <section id="discussion" class="screen">
+    <h1>Discussion Time</h1>
+    <div class="timer" id="timerDisplay">60</div>
+    <p class="info">Ask questions and find the imposter.</p>
+    <button onclick="showVoting()">Go to Voting</button>
+    <button class="quit" onclick="resetGame()">Quit Game</button>
+  </section>
 
-      <button onclick="startGame()">Begin Game</button>
-      <button class="quit" onclick="resetGame()">Quit Game</button>
-    </section>
+  <section id="vote" class="screen">
+    <h1>Vote Imposter</h1>
+    <p class="subtitle">Tap player names to vote</p>
+    <div id="voteBox"></div>
+    <button onclick="calculateResult()">Finish Game</button>
+    <button class="quit" onclick="resetGame()">Quit Game</button>
+  </section>
 
-    <!-- REVEAL -->
-    <section id="reveal" class="screen">
-      <h1 id="playerName"></h1>
-      <p class="subtitle">Pass phone to this player</p>
+  <section id="result" class="screen">
+    <h1 id="winnerText"></h1>
+    <div class="card">
+      <div id="resultDetails" class="result-text"></div>
+    </div>
+    <button onclick="startNewRound()">Next Round</button>
+    <button class="quit" onclick="resetGame()">Quit Game</button>
+  </section>
 
-      <div id="wordBox" class="card hidden">
-        <p id="categoryText" class="hint"></p>
-        <h2 id="secretWord"></h2>
-      </div>
+</main>
 
-      <button id="showBtn" onclick="showWord()">Show My Word</button>
-      <button id="nextBtn" class="hidden" onclick="nextPlayer()">Next Player</button>
-      <button class="quit" onclick="resetGame()">Quit Game</button>
-    </section>
-
-    <!-- DISCUSSION -->
-    <section id="discussion" class="screen">
-      <h1>Discussion Time</h1>
-
-      <div class="timer" id="timerDisplay">60</div>
-
-      <p class="info">
-        Ask questions and find the imposter.
-      </p>
-
-      <button onclick="showVoting()">Go to Voting</button>
-      <button class="quit" onclick="resetGame()">Quit Game</button>
-    </section>
-
-    <!-- VOTE -->
-    <section id="vote" class="screen">
-      <h1>Vote Imposter</h1>
-      <p class="subtitle">Tap player names to vote</p>
-
-      <div id="voteBox"></div>
-
-      <button onclick="calculateResult()">Finish Game</button>
-      <button class="quit" onclick="resetGame()">Quit Game</button>
-    </section>
-
-    <!-- RESULT -->
-    <section id="result" class="screen">
-      <h1 id="winnerText"></h1>
-
-      <div class="card">
-        <div id="resultDetails" class="result-text"></div>
-      </div>
-
-      <button onclick="startNewRound()">Next Round</button>
-      <button class="quit" onclick="resetGame()">Quit Game</button>
-    </section>
-
-  </main>
-
-  <script src="words.js"></script>
-  <script src="script.js"></script>
-
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js");
-    }
-  </script>
-
+<script src="words.js"></script>
+<script src="script.js"></script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
 </body>
 </html>
