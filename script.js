@@ -16,18 +16,12 @@ function showScreen(id){
 function renderPlayers(){
   const box = document.getElementById("playersBox");
   box.innerHTML = "";
-
   players.forEach((player, index) => {
     box.innerHTML += `
       <div class="player-row">
-        <input 
-          placeholder="Player ${index + 1}" 
-          value="${player}"
-          oninput="players[${index}] = this.value"
-        >
+        <input placeholder="Player ${index + 1}" value="${player}" oninput="players[${index}] = this.value">
         <button class="remove" onclick="removePlayer(${index})">X</button>
-      </div>
-    `;
+      </div>`;
   });
 }
 
@@ -50,7 +44,6 @@ function getWord(){
     alert("All words used. Click Quit Game to restart.");
     return null;
   }
-
   const index = Math.floor(Math.random() * availableWords.length);
   const word = availableWords[index];
   availableWords.splice(index, 1);
@@ -58,7 +51,7 @@ function getWord(){
 }
 
 function startGame(){
-  const validPlayers = players.filter(p => p.trim() !== "");
+  const validPlayers = players.map(p => p.trim()).filter(p => p !== "");
 
   if(validPlayers.length < 3){
     alert("Add minimum 3 players");
@@ -80,7 +73,6 @@ function startGame(){
   });
 
   let imposterIndexes = [];
-
   while(imposterIndexes.length < imposterCount){
     const randomIndex = Math.floor(Math.random() * validPlayers.length);
     if(!imposterIndexes.includes(randomIndex)){
@@ -158,19 +150,16 @@ function startTimer(){
 
 function showVoting(){
   clearInterval(timer);
-
   const voteBox = document.getElementById("voteBox");
   voteBox.innerHTML = "";
   votes = {};
 
   roles.forEach(player => {
     votes[player.name] = 0;
-
     voteBox.innerHTML += `
       <button class="vote-btn" onclick="votePlayer('${player.name}')">
         ${player.name} - Votes: <span id="vote-${player.name}">0</span>
-      </button>
-    `;
+      </button>`;
   });
 
   showScreen("vote");
@@ -201,36 +190,24 @@ function calculateResult(){
 
   const imposters = roles.filter(p => p.role === "IMPOSTER");
   const imposterNames = imposters.map(p => p.name);
-
   const allFound = imposterNames.every(name => votedOutNames.includes(name));
 
   if(allFound){
     document.getElementById("winnerText").innerText = "Players Win 🎉";
-
     roles.forEach(player => {
-      if(player.role === "PLAYER"){
-        scores[player.name] += 1;
-      }
+      if(player.role === "PLAYER") scores[player.name] += 1;
     });
   }else{
     document.getElementById("winnerText").innerText = "Imposters Win 😈";
-
     imposters.forEach(imposter => {
       scores[imposter.name] += 2;
     });
   }
 
   let scoreHTML = `<div class="scoreboard"><h3>Scoreboard</h3>`;
-
   for(let name in scores){
-    scoreHTML += `
-      <div class="score-item">
-        <span>${name}</span>
-        <span>${scores[name]}</span>
-      </div>
-    `;
+    scoreHTML += `<div class="score-item"><span>${name}</span><span>${scores[name]}</span></div>`;
   }
-
   scoreHTML += `</div>`;
 
   document.getElementById("resultDetails").innerHTML = `
