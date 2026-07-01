@@ -1,18 +1,13 @@
 {
   "name": "Malayalam Imposter Game",
   "short_name": "Imposter",
-  "description": "Malayalam & English multiplayer party game to find the hidden imposter.",
+  "description": "Malayalam & English multiplayer party game",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#111827",
   "theme_color": "#ef4444",
-  "lang": "en",
-  "categories": [
-    "games",
-    "entertainment"
-  ],
   "icons": [
     {
       "src": "icon-192.png",
